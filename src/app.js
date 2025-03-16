@@ -13,14 +13,23 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-rl.question('Enter your numbers', (numbers) => {
-  if (!checkIsValidUserInput(numbers)) {
-    rl.write('your numbers are invalid');
-    rl.close();
+const handleResponse = (response) => {
+  if (!checkIsValidUserInput(response)) {
+    rl.write(
+      'Your numbers are invalid. Please enter a valid 4-digit number.\n',
+    );
+    rl.question('Enter your numbers: ', (numbers) => handleResponse(numbers));
   } else {
-    const result = getBullsAndCows(numbers, quessNumbers);
+    const result = getBullsAndCows(response, quessNumbers);
 
-    rl.write(`buls: ${result.bulls}; Cows: ${result.cows}\n`);
-    rl.close();
+    if (result.bulls === 4 && result.cows === 0) {
+      rl.write(`You win! The correct number was ${quessNumbers}.\n`);
+      rl.close();
+    } else {
+      rl.write(`bulls: ${result.bulls}; cows: ${result.cows}\n`);
+      rl.question('Enter your numbers: ', (numbers) => handleResponse(numbers));
+    }
   }
-});
+};
+
+rl.question('Enter your numbers: ', (numbers) => handleResponse(numbers));
